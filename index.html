@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Calendar</title>
+    <style>
+        :root {
+            --color-primary: #2180 8d;
+            --color-text: #134252;
+            --color-bg: #fcfcf9;
+            --color-border: #a7a9a9;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--color-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .month-year {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 20px;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .day-header {
+            font-weight: 600;
+            color: var(--color-border);
+            font-size: 12px;
+            padding: 10px 0;
+        }
+        
+        .day {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--color-text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .day.other-month {
+            color: #ccc;
+        }
+        
+        .day.today {
+            background-color: var(--color-primary);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(33, 128, 141, 0.3);
+        }
+        
+        .day:hover:not(.other-month):not(.today) {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="month-year" id="monthYear"></div>
+        <div class="calendar" id="calendar"></div>
+    </div>
+
+    <script>
+        function generateCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const date = today.getDate();
+            
+            // Set month/year header
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const calendar = document.getElementById('calendar');
+            
+            // Day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'day other-month';
+                day.textContent = daysInPrevMonth - i;
+                calendar.appendChild(day);
+            }
+            
+            // Current month days
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'day';
+                if (i === date) {
+                    day.classList.add('today');
+                }
+                day.textContent = i;
+                calendar.appendChild(day);
+            }
+            
+            // Next month days
+            const totalCells = calendar.children.length - 7; // subtract header row
+            const remainingCells = 42 - totalCells; // 6 rows × 7 days
+            for (let i = 1; i <= remainingCells; i++) {
+                const day = document.createElement('div');
+                day.className = 'day other-month';
+                day.textContent = i;
+                calendar.appendChild(day);
+            }
+        }
+        
+        generateCalendar();
+    </script>
+</body>
+</html>
